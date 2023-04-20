@@ -1,0 +1,1 @@
+celery -l debug -A config.celery_config worker -P gevent
