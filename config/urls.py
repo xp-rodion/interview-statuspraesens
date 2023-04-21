@@ -21,4 +21,5 @@ from django.urls import path, include
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('api/v1/', include('config.api.urls')),
+                  path('validate_email/', include('validate_email.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

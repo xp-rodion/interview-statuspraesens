@@ -18,23 +18,3 @@ def send_email(email_uid: uuid):
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[email.receiver],
         fail_silently=False)
-
-
-"""
-Работа с двумя очередями, но с одной таской.
-вызывать во вьюхе, с помощью кода ниже.
-
-You can also override this using the routing_key argument to Task.apply_async(), or send_task():
-
-from feeds.tasks import import_feed
-
-import_feed.apply_async(args=['uuid почты'],
-                        queue='mail_queue', здесь мы задаем явно в какую очередь кинуть
-                        routing_key='feed.import' мб не нужен, почитать.)
-                        
-вызывать данную очередь -> celery -A путь до файла с настройками -Q таска
-                   
-прочитать про очереди и поточность
-
-при парсе excel и txt, просто каждый раз вызывать валидировать наш mail и отправлять в нужную очередь
-"""

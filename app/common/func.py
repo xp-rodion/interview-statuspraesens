@@ -2,6 +2,7 @@ import re
 from collections import OrderedDict
 from send.models import Email
 from send.tasks import send_email
+import openpyxl
 
 
 def is_not_empty(d):
@@ -35,7 +36,7 @@ def get_domain_name_email(email_address: str) -> str:
     return domain_name
 
 
-def send_message(email) -> None:
+def send_message(email: Email) -> None:
     """
     The function has 3 celery queues.
     Where two domains are allocated with the same name queue,
@@ -45,11 +46,31 @@ def send_message(email) -> None:
     email_address = email.receiver
     domain_name = get_domain_name_email(email_address)
     queue = 'anything_queue'
-    email.status = Email.STATUS_PERFORMING
     if domain_name in domain_dict:
         queue = domain_dict[domain_name]
     try:
         send_email.apply_async(kwargs={'email_uid': email.uid}, queue=queue)
         email.status = Email.STATUS_SUCCESS
+        email.result = {'status': 'OK'}
     except (Exception, ):
         email.status = Email.STATUS_ERROR
+        email.result = {'error': 'Error code 451. Requested action aborted: local error in processing.'}
+    email.save()
+
+
+def get_email_addresses(name_xlsx_file):
+    workbook = openpyxl.load_workbook(name_xlsx_file)
+    columns = []
+
+    for sheet_name in workbook.sheetnames:
+        sheet = workbook[sheet_name]
+
+        used_columns = sheet.columns
+
+        for column in used_columns:
+            if column[0].value == "mail":
+                for mail in column:
+                    if not (mail.value is None):
+                        columns.append(mail.value)
+
+    return columns[1:]

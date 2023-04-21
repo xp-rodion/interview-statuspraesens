@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'common.apps.CommonConfig',
     'user.apps.UserConfig',
     'send.apps.SendConfig',
+    'validate_email.apps.ValidateEmailConfig',
 ]
 
 MIDDLEWARE = [
